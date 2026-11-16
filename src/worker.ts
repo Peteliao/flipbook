@@ -1,3 +1,4 @@
+import './dom-shim'
 import * as OpenCC from 'opencc-js'
 import {
   readEpubInfo,
