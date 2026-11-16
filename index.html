@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="翻书 Flipbook：纯前端的 EPUB 电子书繁简双向转换工具，自动识别繁体 / 简体，文件本地处理不上传。" />
+  <meta name="theme-color" content="#f2f4fa" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0e1015" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <title>翻书 Flipbook · EPUB 繁简双向转换</title>
+  <script type="module" crossorigin src="./assets/index-9ou2or6e.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BY1lUZc2.css">
+</head>
+<body>
+  <div class="glow" aria-hidden="true"></div>
+  <main class="app">
+    <header class="header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M12 16h9a11 11 0 0 1 11 11v23a7 7 0 0 0-7-7H12z" fill="#fff"/>
+            <path d="M52 16h-9a11 11 0 0 0-11 11v23a7 7 0 0 1 7-7h13z" fill="#fff" opacity="0.58"/>
+          </svg>
+        </span>
+        <span class="brand-name">翻书</span>
+      </div>
+      <p class="subtitle">EPUB 电子书繁简双向转换 · 自动识别 · 本地处理</p>
+    </header>
+
+    <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="选择 EPUB 文件">
+      <input id="file-input" type="file" accept=".epub,application/epub+zip" hidden />
+      <span class="dz-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+        </svg>
+      </span>
+      <p class="dz-main">拖入 EPUB 文件，或<span class="dz-link">点击选择</span></p>
+      <p class="dz-hint">支持 EPUB 2 / EPUB 3 · 文件不会上传到任何服务器</p>
+    </section>
+
+    <section id="book-card" class="card hidden">
+      <div class="book-head">
+        <span class="book-cover" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </span>
+        <div class="book-info">
+          <div class="book-title" id="book-title"></div>
+          <div class="book-meta" id="book-meta"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field-label">转换方向</span>
+        <div class="segmented" role="radiogroup" aria-label="转换方向">
+          <label><input type="radio" name="direction" value="auto" checked /><span>自动识别</span></label>
+          <label><input type="radio" name="direction" value="t2s" /><span>繁 → 简</span></label>
+          <label><input type="radio" name="direction" value="s2t" /><span>简 → 繁</span></label>
+        </div>
+        <div id="detect-line" class="detect" data-state="ok">
+          <span class="detect-dot" aria-hidden="true"></span>
+          <span id="detect-text">将自动识别文字类型</span>
+        </div>
+      </div>
+
+      <label class="switch-row">
+        <span class="switch-text">
+          <span class="switch-label">地区词汇转换</span>
+          <span class="switch-hint" id="vocab-hint">記憶體 → 内存 · 滑鼠 → 鼠标</span>
+        </span>
+        <input type="checkbox" id="opt-vocab" class="switch" role="switch" aria-label="地区词汇转换" />
+      </label>
+
+      <div class="actions">
+        <button id="btn-convert" class="btn primary">开始转换</button>
+        <button id="btn-reset" class="btn ghost">重新选择</button>
+      </div>
+      <div id="progress-wrap" class="progress-wrap hidden">
+        <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+        <div id="progress-text" class="progress-text">准备中…</div>
+      </div>
+      <div id="error" class="error hidden" role="alert"></div>
+    </section>
+
+    <section id="result-card" class="card result hidden">
+      <span class="result-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m5 12.5 4.5 4.5L19 7.5"/>
+        </svg>
+      </span>
+      <div class="result-head">
+        <div class="result-eyebrow">转换完成</div>
+        <div class="book-title" id="result-title"></div>
+        <div class="book-meta" id="result-meta"></div>
+      </div>
+      <div class="actions">
+        <button id="btn-download" class="btn primary">下载 EPUB</button>
+        <button id="btn-again" class="btn ghost">转换另一本</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      OpenCC 转换引擎 · EPUB 2 / EPUB 3 · 全部处理均在浏览器本地完成
+    </footer>
+  </main>
+</body>
+</html>
