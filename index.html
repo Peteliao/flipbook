@@ -14,42 +14,48 @@
   <div class="glow" aria-hidden="true"></div>
   <main class="app">
     <header class="header">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 64 64" fill="none">
-            <path d="M12 16h9a11 11 0 0 1 11 11v23a7 7 0 0 0-7-7H12z" fill="#fff"/>
-            <path d="M52 16h-9a11 11 0 0 0-11 11v23a7 7 0 0 1 7-7h13z" fill="#fff" opacity="0.58"/>
+      <div class="header-top">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <path d="M12 16h9a11 11 0 0 1 11 11v23a7 7 0 0 0-7-7H12z" fill="#fff"/>
+              <path d="M52 16h-9a11 11 0 0 0-11 11v23a7 7 0 0 1 7-7h13z" fill="#fff" opacity="0.58"/>
+            </svg>
+          </span>
+          <span class="brand-name">翻书</span>
+        </div>
+        <button id="btn-theme" class="btn-icon theme-toggle" aria-label="切换明暗模式" title="切换浅色 / 深色 / 跟随系统">
+          <!-- Sun Icon (Light) -->
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
           </svg>
-        </span>
-        <span class="brand-name">翻书</span>
+          <!-- Moon Icon (Dark) -->
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+          <!-- Auto Icon (System) -->
+          <svg class="icon-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>
+          </svg>
+        </button>
       </div>
-      <p class="subtitle">EPUB 电子书繁简双向转换 · 自动识别 · 本地处理</p>
+      <p class="subtitle">EPUB 电子书繁简双向转换 · 自动识别 · 本地极速处理</p>
     </header>
 
+    <!-- Dropzone Area -->
     <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="选择 EPUB 文件">
-      <input id="file-input" type="file" accept=".epub,application/epub+zip" hidden />
+      <input id="file-input" type="file" accept=".epub,application/epub+zip" multiple hidden />
       <span class="dz-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
         </svg>
       </span>
-      <p class="dz-main">拖入 EPUB 文件，或<span class="dz-link">点击选择</span></p>
-      <p class="dz-hint">支持 EPUB 2 / EPUB 3 · 文件不会上传到任何服务器</p>
+      <p class="dz-main">拖入一个或多个 EPUB 文件，或<span class="dz-link">点击选择</span></p>
+      <p class="dz-hint">支持 EPUB 2 / EPUB 3 · 多文件批量转换 · 100% 浏览器本地运算</p>
     </section>
 
-    <section id="book-card" class="card hidden">
-      <div class="book-head">
-        <span class="book-cover" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/>
-          </svg>
-        </span>
-        <div class="book-info">
-          <div class="book-title" id="book-title"></div>
-          <div class="book-meta" id="book-meta"></div>
-        </div>
-      </div>
-
+    <!-- Global Conversion Options -->
+    <div id="options-panel" class="options-panel hidden">
       <div class="field">
         <span class="field-label">转换方向</span>
         <div class="segmented" role="radiogroup" aria-label="转换方向">
@@ -57,24 +63,55 @@
           <label><input type="radio" name="direction" value="t2s" /><span>繁 → 简</span></label>
           <label><input type="radio" name="direction" value="s2t" /><span>简 → 繁</span></label>
         </div>
-        <div id="detect-line" class="detect" data-state="ok">
-          <span class="detect-dot" aria-hidden="true"></span>
-          <span id="detect-text">将自动识别文字类型</span>
+      </div>
+
+      <div class="switches-grid">
+        <label class="switch-row">
+          <span class="switch-text">
+            <span class="switch-label">地区词汇转换</span>
+            <span class="switch-hint" id="vocab-hint">記憶體 ↔ 内存 · 滑鼠 ↔ 鼠标</span>
+          </span>
+          <input type="checkbox" id="opt-vocab" class="switch" role="switch" aria-label="地区词汇转换" />
+        </label>
+
+        <label class="switch-row">
+          <span class="switch-text">
+            <span class="switch-label">标点风格转换</span>
+            <span class="switch-hint" id="quotes-hint">繁体直角「」↔ 简体弯引号“”</span>
+          </span>
+          <input type="checkbox" id="opt-quotes" class="switch" role="switch" aria-label="标点风格转换" />
+        </label>
+      </div>
+    </div>
+
+    <!-- Single Book Card -->
+    <section id="book-card" class="card hidden">
+      <div class="book-head">
+        <div class="cover-wrapper" id="book-cover-wrap">
+          <img id="book-cover-img" class="book-cover-img hidden" alt="图书封面" />
+          <span id="book-cover-fallback" class="book-cover" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/>
+            </svg>
+          </span>
+        </div>
+        <div class="book-info">
+          <div class="book-title" id="book-title"></div>
+          <div class="book-meta" id="book-meta"></div>
         </div>
       </div>
 
-      <label class="switch-row">
-        <span class="switch-text">
-          <span class="switch-label">地区词汇转换</span>
-          <span class="switch-hint" id="vocab-hint">記憶體 → 内存 · 滑鼠 → 鼠标</span>
-        </span>
-        <input type="checkbox" id="opt-vocab" class="switch" role="switch" aria-label="地区词汇转换" />
-      </label>
+      <div id="detect-line" class="detect" data-state="ok">
+        <span class="detect-dot" aria-hidden="true"></span>
+        <span id="detect-text">将自动识别文字类型</span>
+      </div>
 
       <div class="actions">
         <button id="btn-convert" class="btn primary">开始转换</button>
+        <button id="btn-preview-before" class="btn ghost">效果预览</button>
         <button id="btn-reset" class="btn ghost">重新选择</button>
       </div>
+
       <div id="progress-wrap" class="progress-wrap hidden">
         <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
         <div id="progress-text" class="progress-text">准备中…</div>
@@ -82,6 +119,33 @@
       <div id="error" class="error hidden" role="alert"></div>
     </section>
 
+    <!-- Batch Queue Card -->
+    <section id="batch-card" class="card hidden">
+      <div class="batch-header">
+        <div>
+          <h2 class="batch-title">批量任务队列</h2>
+          <div id="batch-meta" class="book-meta">共 0 本书</div>
+        </div>
+        <button id="btn-batch-clear" class="btn-text">清空队列</button>
+      </div>
+
+      <div id="batch-list" class="batch-list">
+        <!-- Rendered items -->
+      </div>
+
+      <div id="batch-overall-progress" class="progress-wrap hidden">
+        <div class="progress-bar"><div id="batch-progress-fill" class="progress-fill"></div></div>
+        <div id="batch-progress-text" class="progress-text">批量处理中…</div>
+      </div>
+
+      <div class="actions">
+        <button id="btn-batch-convert" class="btn primary">全部开始转换</button>
+        <button id="btn-batch-zip" class="btn success hidden">打包下载全部 (.zip)</button>
+        <button id="btn-batch-reset" class="btn ghost">添加更多图书</button>
+      </div>
+    </section>
+
+    <!-- Single Result Card -->
     <section id="result-card" class="card result hidden">
       <span class="result-badge" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -95,14 +159,47 @@
       </div>
       <div class="actions">
         <button id="btn-download" class="btn primary">下载 EPUB</button>
+        <button id="btn-preview-after" class="btn ghost">对比预览</button>
         <button id="btn-again" class="btn ghost">转换另一本</button>
       </div>
     </section>
 
+    <!-- Footer -->
     <footer class="footer">
-      OpenCC 转换引擎 · EPUB 2 / EPUB 3 · 全部处理均在浏览器本地完成
+      OpenCC 转换引擎 · EPUB 2 / EPUB 3 · Web Worker 异步加速 · 全部处理均在浏览器本地完成
     </footer>
   </main>
+
+  <!-- Preview Modal Dialog -->
+  <div id="preview-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="preview-modal-title">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h3 id="preview-modal-title" class="modal-title">转换效果即时预览</h3>
+        <button id="btn-modal-close" class="btn-icon" aria-label="关闭预览">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <p class="modal-sub">正文第 1 章样例文本（转换前后对比）</p>
+
+      <div class="preview-columns">
+        <div class="preview-box">
+          <div class="preview-box-label">转换前（原文件）</div>
+          <div id="preview-original-content" class="preview-text"></div>
+        </div>
+        <div class="preview-box">
+          <div class="preview-box-label">转换后（译文）</div>
+          <div id="preview-converted-content" class="preview-text"></div>
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button id="btn-modal-ok" class="btn primary">完成预览</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

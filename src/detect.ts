@@ -7,10 +7,12 @@ export interface ScriptDetection {
   traditional: number
   simplified: number
   confidence: number
+  hasChinese: boolean
+  totalHan: number
 }
 
 const HAN = /^\p{Script=Han}$/u
-const MIN_SIGNALS = 20
+const MIN_SIGNALS = 15
 
 export function detectScript(
   sample: string,
@@ -20,9 +22,11 @@ export function detectScript(
   const cache = new Map<string, 0 | 1 | 2>()
   let traditional = 0
   let simplified = 0
+  let totalHan = 0
 
   for (const ch of sample) {
     if (!HAN.test(ch)) continue
+    totalHan++
     let kind = cache.get(ch)
     if (kind === undefined) {
       const asSimplified = t2s(ch)
@@ -36,9 +40,12 @@ export function detectScript(
     else if (kind === 2) simplified++
   }
 
+  const hasChinese = totalHan >= 10
   const total = traditional + simplified
   let source: SourceScript = 'unknown'
-  if (total >= MIN_SIGNALS) source = traditional > simplified ? 'traditional' : 'simplified'
+  if (total >= MIN_SIGNALS) {
+    source = traditional > simplified ? 'traditional' : 'simplified'
+  }
   const confidence = total ? Math.round((Math.max(traditional, simplified) / total) * 100) : 0
-  return { source, traditional, simplified, confidence }
+  return { source, traditional, simplified, confidence, hasChinese, totalHan }
 }
